@@ -21,9 +21,16 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Raw and generated datasets
+# Raw datasets
 data/raw/
+
+# Ignore generated processed files by default
 data/processed/*
 
 # Keep the research report
 !data/processed/company_profile_vocabulary_research_report.md
+
+# Include essential production model artefacts
+!data/processed/final_svm_model.pkl
+!data/processed/final_preprocessor.pkl
+!data/processed/best_threshold.json
