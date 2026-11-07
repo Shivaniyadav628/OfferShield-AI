@@ -1,0 +1,29 @@
+# Python virtual environments
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# VS Code settings
+.vscode/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Raw and generated datasets
+data/raw/
+data/processed/*
+
+# Keep the research report
+!data/processed/company_profile_vocabulary_research_report.md
