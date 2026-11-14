@@ -13,7 +13,7 @@ The long-term vision is to build an intelligent opportunity verification and ris
 
 ---
 
-## 📌 Table of Contents
+##  Table of Contents
 
 1. Project Overview
 2. Problem Statement
@@ -49,8 +49,28 @@ The system is designed around five major capabilities:
 - **Explainability:** Human-readable explanations of model predictions.
 - **Company Consistency Analysis:** Examination of company identity and recruitment information for inconsistencies.
 - **Opportunity Assistance:** Tools to help users evaluate and compare job and internship opportunities.
-
 ---
+##  Live Demo and Deployment
+
+OfferShield AI is deployed and accessible through the following links:
+
+| Component | Deployment Link |
+|---|---|
+| **Frontend Application** | https://offershield-frontend.onrender.com |
+| **Backend API** | https://offershield-ai.onrender.com |
+| **Backend Health Check** | https://offershield-ai.onrender.com/health |
+| **GitHub Repository** | https://github.com/Shivaniyadav628/OfferShield-AI |
+
+### Deployment Architecture
+
+- **Frontend:** React + Vite, deployed on Render Static Sites.
+- **Backend:** FastAPI, deployed on Render Web Services.
+- **Communication:** Frontend communicates with the backend through REST API endpoints.
+- **Machine Learning:** The trained model and preprocessing pipeline are integrated into the backend prediction workflow.
+
+**Try OfferShield AI:** Visit the [Live Application](https://offershield-frontend.onrender.com) to explore the platform.
+
+**Note:** OfferShield AI provides machine-learning-based risk assessments and explanations. Its predictions are not guarantees of legitimacy or fraud.
 
 ## 2. Problem Statement
 
