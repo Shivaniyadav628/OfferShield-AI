@@ -1,6 +1,12 @@
 
+from typing import Literal
+
 from pydantic import BaseModel, Field, ConfigDict
 
+
+# ============================================================
+# 1. JOB INPUT SCHEMA
+# ============================================================
 
 class JobInput(BaseModel):
 
@@ -68,8 +74,9 @@ class JobInput(BaseModel):
     function: str = Field(..., description="Job function")
 
 
-from typing import Literal
-
+# ============================================================
+# 2. PREDICTION RESPONSE SCHEMA
+# ============================================================
 
 class PredictionResponse(BaseModel):
 
@@ -77,22 +84,45 @@ class PredictionResponse(BaseModel):
 
     result: Literal[
         "Likely Genuine",
+        "Needs Manual Review",
         "Potentially Fraudulent"
     ]
+
+    risk_level: Literal[
+        "low",
+        "medium",
+        "high"
+    ]
+
+    recommendation: str
 
     decision_score: float
 
     threshold: float
 
+    review_threshold: float
+
+
+# ============================================================
+# 3. FEATURE SIGNAL SCHEMA
+# ============================================================
+
 class FeatureSignal(BaseModel):
 
-    feature: str = Field(..., description="Name of the contributing feature")
+    feature: str = Field(
+        ...,
+        description="Name of the contributing feature"
+    )
 
     contribution: float = Field(
         ...,
         description="Contribution to the model decision score"
     )
 
+
+# ============================================================
+# 4. MATHEMATICAL VERIFICATION SCHEMA
+# ============================================================
 
 class MathematicalVerification(BaseModel):
 
@@ -108,6 +138,10 @@ class MathematicalVerification(BaseModel):
 
     verified: bool
 
+
+# ============================================================
+# 5. EXPLANATION RESPONSE SCHEMA
+# ============================================================
 
 class ExplanationResponse(BaseModel):
 

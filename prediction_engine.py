@@ -80,7 +80,14 @@ NUMERICAL_COLUMNS = [
 
 
 # ============================================================
-# 5. LOAD TRAINED MODEL AND PREPROCESSOR
+# 5. RISK CLASSIFICATION SETTINGS
+# ============================================================
+
+LOWER_REVIEW_THRESHOLD = -0.4
+
+
+# ============================================================
+# 6. LOAD TRAINED MODEL AND PREPROCESSOR
 # ============================================================
 
 model = joblib.load(MODEL_PATH)
@@ -89,7 +96,7 @@ preprocessor = joblib.load(PREPROCESSOR_PATH)
 
 
 # ============================================================
-# 6. LOAD SELECTED DECISION THRESHOLD
+# 7. LOAD SELECTED DECISION THRESHOLD
 # ============================================================
 
 with open(THRESHOLD_PATH, "r", encoding="utf-8") as file:
@@ -99,13 +106,13 @@ BEST_THRESHOLD = float(threshold_data["best_threshold"])
 
 
 # ============================================================
-# 7. PREDICTION FUNCTION
+# 8. PREDICTION FUNCTION
 # ============================================================
 
 def predict_job_fraud(job_data):
 
     # --------------------------------------------------------
-    # Check that input is a dictionary
+    # Check input type
     # --------------------------------------------------------
 
     if not isinstance(job_data, dict):
@@ -114,7 +121,7 @@ def predict_job_fraud(job_data):
         )
 
     # --------------------------------------------------------
-    # Check for missing required columns
+    # Check required columns
     # --------------------------------------------------------
 
     missing_columns = [
@@ -129,13 +136,13 @@ def predict_job_fraud(job_data):
         )
 
     # --------------------------------------------------------
-    # Create DataFrame using required columns only
+    # Create DataFrame
     # --------------------------------------------------------
 
     job_df = pd.DataFrame([job_data])[REQUIRED_COLUMNS].copy()
 
     # --------------------------------------------------------
-    # Handle missing and empty text values
+    # Handle missing text values
     # --------------------------------------------------------
 
     for column in TEXT_COLUMNS:
@@ -149,7 +156,7 @@ def predict_job_fraud(job_data):
         )
 
     # --------------------------------------------------------
-    # Handle missing numerical values
+    # Handle numerical values
     # --------------------------------------------------------
 
     for column in NUMERICAL_COLUMNS:
@@ -163,7 +170,7 @@ def predict_job_fraud(job_data):
         )
 
     # --------------------------------------------------------
-    # Validate numerical binary values
+    # Validate binary numerical values
     # --------------------------------------------------------
 
     for column in NUMERICAL_COLUMNS:
@@ -175,31 +182,57 @@ def predict_job_fraud(job_data):
             )
 
     # --------------------------------------------------------
-    # Transform input using saved preprocessor
+    # Transform input
     # --------------------------------------------------------
 
     processed_job = preprocessor.transform(job_df)
 
     # --------------------------------------------------------
-    # Generate model decision score
+    # Calculate LinearSVC decision score
     # --------------------------------------------------------
 
-    decision_score = model.decision_function(processed_job)[0]
+    decision_score = float(
+        model.decision_function(processed_job)[0]
+    )
 
     # --------------------------------------------------------
-    # Apply validation-selected threshold
+    # Preserve original binary prediction
     # --------------------------------------------------------
 
-    prediction = int(decision_score >= BEST_THRESHOLD)
+    prediction = int(
+        decision_score >= BEST_THRESHOLD
+    )
 
     # --------------------------------------------------------
-    # Generate readable risk classification
+    # Generate three-level risk classification
     # --------------------------------------------------------
 
-    if prediction == 1:
+    if decision_score >= BEST_THRESHOLD:
+
         result = "Potentially Fraudulent"
+        risk_level = "high"
+        recommendation = (
+            "Investigate the job posting carefully "
+            "before sharing personal information."
+        )
+
+    elif decision_score >= LOWER_REVIEW_THRESHOLD:
+
+        result = "Needs Manual Review"
+        risk_level = "medium"
+        recommendation = (
+            "Review the employer, contact information, "
+            "and job details before proceeding."
+        )
+
     else:
+
         result = "Likely Genuine"
+        risk_level = "low"
+        recommendation = (
+            "The model indicates lower risk, but "
+            "independent verification is still recommended."
+        )
 
     # --------------------------------------------------------
     # Return prediction results
@@ -208,6 +241,9 @@ def predict_job_fraud(job_data):
     return {
         "prediction": prediction,
         "result": result,
-        "decision_score": float(decision_score),
-        "threshold": BEST_THRESHOLD
+        "risk_level": risk_level,
+        "recommendation": recommendation,
+        "decision_score": decision_score,
+        "threshold": BEST_THRESHOLD,
+        "review_threshold": LOWER_REVIEW_THRESHOLD
     }
